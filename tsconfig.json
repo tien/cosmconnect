@@ -1,7 +1,9 @@
 {
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx"
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx",
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src"]
 }
