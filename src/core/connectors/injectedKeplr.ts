@@ -24,7 +24,10 @@ export class InjectedKeplrConnector extends BaseCosmConnector<InjectedKeplrConne
 
   constructor(options: InjectedKeplrConnectorOptions) {
     super(options);
-    window.addEventListener("keplr_keystorechange", this.#keystoreChangeListener);
+    window.addEventListener(
+      "keplr_keystorechange",
+      this.#keystoreChangeListener
+    );
   }
 
   async connect() {
@@ -37,14 +40,20 @@ export class InjectedKeplrConnector extends BaseCosmConnector<InjectedKeplrConne
     this.#keplr = windowKeplr;
     this.emit("connect");
 
-    window.addEventListener("keplr_keystorechange", this.#keystoreChangeListener);
+    window.addEventListener(
+      "keplr_keystorechange",
+      this.#keystoreChangeListener
+    );
   }
 
   disconnect() {
     this.#keplr = undefined;
     this.emit("disconnect");
 
-    window.removeEventListener("keplr_keystorechange", this.#keystoreChangeListener);
+    window.removeEventListener(
+      "keplr_keystorechange",
+      this.#keystoreChangeListener
+    );
 
     return Promise.resolve();
   }
@@ -54,13 +63,15 @@ export class InjectedKeplrConnector extends BaseCosmConnector<InjectedKeplrConne
       throw new Error("Keplr instance is undefined");
     }
 
-    await this.#keplr.experimentalSuggestChain(this.#chainStore.getChain(chainId).raw);
+    await this.#keplr.experimentalSuggestChain(
+      this.#chainStore.getChain(chainId).raw
+    );
     await this.#keplr.enable(chainId);
     const signer = this.#keplr.getOfflineSignerAuto(chainId);
 
     this.emit("enable", chainId);
 
-    return signer;
+    return await signer;
   }
 
   // NOTE: work around for Keplr wallet bug where if multiple permission requests happened simultaneously
@@ -68,27 +79,32 @@ export class InjectedKeplrConnector extends BaseCosmConnector<InjectedKeplrConne
   async getSigner(chainId: string): Promise<OfflineSigner> {
     const currentPromise = this.#signerPromises[chainId];
     if (currentPromise !== undefined) {
-      return currentPromise;
+      return await currentPromise;
     }
 
     const promise = this.#getSigner(chainId).then((x) => {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete this.#signerPromises[chainId];
       return x;
     });
 
     this.#signerPromises[chainId] = promise;
 
-    return promise;
+    return await promise;
   }
 
-  async getStargateClient(chainId: string): Promise<StargateClient> {
-    return SigningStargateClient.connect(this.#chainStore.getChain(chainId).rpc);
+  getStargateClient(chainId: string): Promise<StargateClient> {
+    return SigningStargateClient.connect(
+      this.#chainStore.getChain(chainId).rpc
+    );
   }
 
-  async getSigningStargateClient(chainId: string): Promise<SigningStargateClient> {
-    return SigningStargateClient.connectWithSigner(
+  async getSigningStargateClient(
+    chainId: string
+  ): Promise<SigningStargateClient> {
+    return await SigningStargateClient.connectWithSigner(
       this.#chainStore.getChain(chainId).rpc,
-      await this.#getSigner(chainId),
+      await this.#getSigner(chainId)
     );
   }
 
@@ -101,7 +117,7 @@ export class InjectedKeplrConnector extends BaseCosmConnector<InjectedKeplrConne
       return window.keplr;
     }
 
-    return new Promise<Keplr | undefined>((resolve) => {
+    return await new Promise<Keplr | undefined>((resolve) => {
       const documentStateChange = (event: Event) => {
         if ((event.target as Document | null)?.readyState === "complete") {
           resolve(window.keplr);

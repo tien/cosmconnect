@@ -35,20 +35,25 @@ export class MnemonicConnector extends BaseCosmConnector<MnemonicConnectorOption
     return Promise.resolve();
   }
 
-  async getSigner(chainId: string) {
+  getSigner(chainId: string) {
     return DirectSecp256k1HdWallet.fromMnemonic(this.options.mnemonic, {
-      prefix: this.#chainStore.getChain(chainId).bech32Config.bech32PrefixAccAddr,
+      prefix:
+        this.#chainStore.getChain(chainId).bech32Config.bech32PrefixAccAddr,
     });
   }
 
-  async getStargateClient(chainId: string): Promise<StargateClient> {
-    return SigningStargateClient.connect(this.#chainStore.getChain(chainId).rpc);
+  getStargateClient(chainId: string): Promise<StargateClient> {
+    return SigningStargateClient.connect(
+      this.#chainStore.getChain(chainId).rpc
+    );
   }
 
-  async getSigningStargateClient(chainId: string): Promise<SigningStargateClient> {
-    return SigningStargateClient.connectWithSigner(
+  async getSigningStargateClient(
+    chainId: string
+  ): Promise<SigningStargateClient> {
+    return await SigningStargateClient.connectWithSigner(
       this.#chainStore.getChain(chainId).rpc,
-      await this.getSigner(chainId),
+      await this.getSigner(chainId)
     );
   }
 }

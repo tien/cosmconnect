@@ -3,13 +3,15 @@ import type { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 import EventEmitter from "eventemitter3";
 
 export type ConnectorEvents = {
-  connect(): void;
-  disconnect(): void;
-  change(): void;
-  enable(chainIds: string | string[]): void;
+  connect: () => void;
+  disconnect: () => void;
+  change: () => void;
+  enable: (chainIds: string | string[]) => void;
 };
 
-export abstract class BaseCosmConnector<Options = unknown> extends EventEmitter<ConnectorEvents> {
+export abstract class BaseCosmConnector<
+  Options = unknown
+> extends EventEmitter<ConnectorEvents> {
   /** Unique connector id */
   abstract readonly id: string;
   /** Connector name */
@@ -28,5 +30,7 @@ export abstract class BaseCosmConnector<Options = unknown> extends EventEmitter<
   abstract disconnect(): Promise<void>;
   abstract getSigner(chainId: string): Promise<OfflineSigner>;
   abstract getStargateClient(chainId: string): Promise<StargateClient>;
-  abstract getSigningStargateClient(chainId: string): Promise<SigningStargateClient>;
+  abstract getSigningStargateClient(
+    chainId: string
+  ): Promise<SigningStargateClient>;
 }
