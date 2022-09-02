@@ -10,8 +10,16 @@
   "scripts": {
     "build": "pnpm tsc -m esnext --outDir build"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": "https://github.com/tien/cosmconnect",
+  "author": "Tien Nguyen Khac <tien.nguyenkhac@icloud.com> (https://github.com/tien)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tien/cosmconnect/issues"
+  },
+  "homepage": "https://github.com/tien/cosmconnect#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "@cosmjs/proto-signing": "^0.28.13",
     "@cosmjs/stargate": "^0.28.13",
