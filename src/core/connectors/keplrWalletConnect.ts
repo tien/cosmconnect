@@ -52,7 +52,7 @@ export class KeplrWalletConnectConnector extends BaseCosmConnector<KeplrWalletCo
     super(options);
 
     // TODO: the clientMeta options in constructor is always ignored for some reason
-    // @ts-ignore
+    // @ts-expect-error
     this.#walletConnect._clientMeta = this.options.clientMeta;
 
     this.#walletConnect.on("connect", (error) => {
@@ -93,7 +93,7 @@ export class KeplrWalletConnectConnector extends BaseCosmConnector<KeplrWalletCo
     return signer;
   }
 
-  async getStargateClient(chainId: string): Promise<StargateClient> {
+  getStargateClient(chainId: string): Promise<StargateClient> {
     return SigningStargateClient.connect(
       this.#chainStore.getChain(chainId).rpc
     );
@@ -102,7 +102,7 @@ export class KeplrWalletConnectConnector extends BaseCosmConnector<KeplrWalletCo
   async getSigningStargateClient(
     chainId: string
   ): Promise<SigningStargateClient> {
-    return SigningStargateClient.connectWithSigner(
+    return await SigningStargateClient.connectWithSigner(
       this.#chainStore.getChain(chainId).rpc,
       await this.getSigner(chainId)
     );

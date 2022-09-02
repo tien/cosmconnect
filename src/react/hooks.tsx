@@ -36,15 +36,19 @@ export const useSigner = (
     fetch,
     status,
   } = useAsyncFunc(
-    async () => activeConnector?.getSigner(chainId),
+    () => activeConnector?.getSigner(chainId),
     [activeConnector, chainId]
   );
 
   useEffect(() => {
-    activeConnector?.addListener("change", fetch);
+    activeConnector?.addListener("change", () => {
+      void fetch();
+    });
 
     return () => {
-      activeConnector?.removeListener("change", fetch);
+      activeConnector?.removeListener("change", () => {
+        void fetch();
+      });
     };
   }, [activeConnector, fetch]);
 
@@ -69,7 +73,7 @@ export const useStargateClient = (
     fetch,
     status,
   } = useAsyncFunc(
-    async () => activeConnector?.getStargateClient(chainId),
+    () => activeConnector?.getStargateClient(chainId),
     [activeConnector, chainId]
   );
 
@@ -94,7 +98,7 @@ export const useSigningStargateClient = (
     fetch,
     status,
   } = useAsyncFunc(
-    async () => activeConnector?.getSigningStargateClient(chainId),
+    () => activeConnector?.getSigningStargateClient(chainId),
     [activeConnector, chainId]
   );
 
@@ -117,7 +121,7 @@ export const useAccounts = (
     data: accounts,
     fetch,
     status,
-  } = useAsyncFunc(async () => signer?.getAccounts(), [signer, chainId]);
+  } = useAsyncFunc(() => signer?.getAccounts(), [signer, chainId]);
 
   useEffect(() => {
     if (options.enabled) {

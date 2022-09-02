@@ -1,7 +1,7 @@
 import { DependencyList, useCallback, useState } from "react";
 import type { BaseStorage } from "../storage";
 
-export const useAsyncFunc = <TParams extends Array<unknown>, TResult>(
+export const useAsyncFunc = <TParams extends unknown[], TResult>(
   asyncFunc: (...args: TParams) => TResult | Promise<TResult>,
   deps?: DependencyList
 ) => {
@@ -13,22 +13,25 @@ export const useAsyncFunc = <TParams extends Array<unknown>, TResult>(
     "idle" | "pending" | "resolved" | "rejected"
   >("idle");
 
-  const fetch = useCallback(async (...args: TParams) => {
-    setStatus("pending");
-    try {
-      const result = await asyncFunc(...args);
+  const fetch = useCallback(
+    async (...args: TParams) => {
+      setStatus("pending");
+      try {
+        const result = await asyncFunc(...args);
 
-      setData(result);
-      setDataUpdatedAt(new Date());
-      setStatus("resolved");
-      return result;
-    } catch (error) {
-      setError(error);
-      setErrorUpdatedAt(new Date());
-      setStatus("rejected");
-      throw error;
-    }
-  }, deps ?? []);
+        setData(result);
+        setDataUpdatedAt(new Date());
+        setStatus("resolved");
+        return result;
+      } catch (error) {
+        setError(error);
+        setErrorUpdatedAt(new Date());
+        setStatus("rejected");
+        throw error;
+      }
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    deps ?? []
+  );
 
   return {
     dataUpdatedAt,
