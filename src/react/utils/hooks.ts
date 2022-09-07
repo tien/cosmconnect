@@ -1,4 +1,11 @@
-import { DependencyList, useCallback, useState } from "react";
+import {
+  DependencyList,
+  EffectCallback,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import type { BaseStorage } from "../storage";
 
 export const useAsyncFunc = <TParams extends unknown[], TResult>(
@@ -65,4 +72,23 @@ export const useStorageState = <T>(
   };
 
   return [storedValue, setValue] as const;
+};
+
+export const useChangedEffect = (
+  effect: EffectCallback,
+  deps?: DependencyList
+) => {
+  const isFirstMountRef = useRef(true);
+
+  useEffect(
+    () => {
+      if (!isFirstMountRef.current) {
+        effect();
+      }
+
+      isFirstMountRef.current = false;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    deps
+  );
 };

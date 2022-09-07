@@ -131,3 +131,8 @@ export const useAccounts = (
 
   return { accounts, status };
 };
+
+export const useConnectionUpdatedAt = () => {
+  const { updatedAt } = useContext(CosmConnectContext);
+  return updatedAt;
+};
